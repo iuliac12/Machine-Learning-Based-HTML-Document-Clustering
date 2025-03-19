@@ -21,3 +21,23 @@ This project implements a machine-learning-based approach to cluster HTML docume
  - NumPy: Handles similarity matrices and numerical computations.
 
  - os & glob: Used for file handling and retrieving HTML documents from directories.
+
+ ## How It Works
+
+ - Extract Text from HTML: The script parses HTML files and extracts their visible text content.
+
+ - Compute TF-IDF Features: It converts the extracted text into a numerical feature matrix using TF-IDF.
+
+ - Calculate Similarity: Computes the cosine similarity between document vectors.
+
+ - Clustering with DBSCAN: Converts similarity into a distance matrix and applies DBSCAN to cluster similar documents. Output Clusters: Displays the clustered HTML documents, showing which files belong to the same group.
+
+ ## Running the Project
+ 
+To execute the script, run:
+
+- python script.py <path_to_html_directory>
+
+Replace <path_to_html_directory> with the folder containing the HTML files to be clustered.
+
+
