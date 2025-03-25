@@ -1,44 +1,43 @@
 """ 
-/*** 
 os: Standard Python library for interacting with the operating system
 Provides functions for file path manipulation and directory operations
 Used here to build file paths and extract base file names
-***/
 """
 import os
 
 """ 
-/*** 
 glob: Standard library module used for Unix-style pathname pattern expansion
 Used here to search and list all HTML files in a given directory
-***/
 """
 import glob
 
 """ 
-/*** 
 numpy (np): Fundamental package for scientific computing in Python
 Provides support for large, multi-dimensional arrays and matrices, along with a collection of mathematical functions
 Used here for numerical operations on similarity and distance matrices
-***
 """
 import numpy as np
 
 """ 
-/*** 
 pandas (pd): Library providing high-performance, easy-to-use data structures and data analysis tools
 Although imported here, it is not actively used in the current code
 Could be useful for further data manipulation or exporting results
-***/
 """
 import pandas as pd
 
+"""
+re: A module in the Python standard library for working with regular expressions
+It is used here to clean and preprocess the text extracted from HTML files, specifically by removing 
+special characters and digits, leaving only letters and spaces
+re.sub(): Used to substitute portions of the string that match a given pattern with another string
+In this code, it helps remove non-alphabetic characters and extra whitespace
+"""
+import re
+
 """ 
-/*** 
 BeautifulSoup: Library for parsing HTML and XML documents
 Facilitates easy extraction of data from HTML files by navigating, searching, and modifying the parse tree
 Used here to extract the main text content from HTML files
-***/
 """
 from bs4 import BeautifulSoup
 
@@ -86,7 +85,10 @@ def extract_text(html_path):
     """
     with open(html_path, 'r', encoding='utf-8', errors='ignore') as file:
         soup = BeautifulSoup(file, 'html.parser')
-        return soup.get_text(separator=' ', strip=True)
+        text = soup.get_text(separator=' ', strip=True)
+        text = re.sub(r'[^a-zA-Z\s]', '', text)  # Elimina caractere speciale si numere
+        text = re.sub(r'\s+', ' ', text).strip()  # Elimina spatiile multiple
+        return text
 
 
 def load_html_documents(directory):
@@ -165,6 +167,28 @@ def cluster_documents(similarity_matrix, documents, eps=0.5, min_samples=2):
     return clusters
 
 
+def save_clusters_to_csv(clusters, output_file):
+    """
+    Saves the clustering results to a CSV file
+
+    This function iterates through the dictionary of clusters, where each key is a cluster ID 
+    and each value is a list of file paths belonging to that cluster. It creates a DataFrame using pandas 
+    to save the cluster ID and corresponding document names into a CSV file.
+
+    Parameters:
+    - clusters: A dictionary where the keys are cluster IDs and the values are lists of document file paths
+    - output_file: The path to the output CSV file where the clustering results will be saved
+
+    Returns:
+    - None (the function writes to a CSV file)
+    """
+    cluster_data = []
+    for cluster_id, docs in clusters.items():
+        for doc in docs:
+            cluster_data.append([cluster_id, os.path.basename(doc)])
+    df = pd.DataFrame(cluster_data, columns=['Cluster', 'Document'])
+    df.to_csv(output_file, index=False)
+
 
 def main(directory):
     """
@@ -183,17 +207,32 @@ def main(directory):
     similarity_matrix = compute_similarity_matrix(documents)
     clusters = cluster_documents(similarity_matrix, documents)
     
-    for cluster_id, docs in clusters.items():
-        if cluster_id != -1:
-            print(f"\nCluster {cluster_id}:")
-            for doc in docs:
-                print(f"  - {os.path.basename(doc)}")
-        else:
-            print("\nOutliers:")
-            for doc in docs:
-                print(f"  - {os.path.basename(doc)}")
+    save_clusters_to_csv(clusters, "clusters.csv") 
+    print("Rezultatele clustering-ului au fost salvate în 'clusters.csv'")
 
     
 if __name__ == "__main__":
     # Execute the main function with the path to the directory containing HTML documents
-    main(r"C:\Users\Iulia\Downloads\clones 2\clones\tier1")
+    main(r"C:\Users\Iulia\Downloads\clones 2\clones\tier3")
+
+
+"""
+Scop:
+- extragerea textului relevant din fisierele HTML
+- gruparea documentelor similare folosind un alg de clustering
+
+Tehnici:
+- BeautifulSoup - pachet care permite parsarea si exgtragerea textului din fisierele HTML
+- tehnica tf-idf - identifica cele mai relevante cuvinte din document si le compara in mod eficient
+- similaritatea cosinus - pt similaritatea intre vectori => intre documente
+- gruparea documentelor: alg k-means (presupune o valoare predefinita pentru nr de grupuri k) => folosim dbscan
+                         dbscan => nu necesita specificarea nr de grupuri
+
+Rezultat:                         
+- rezultatele clustering-ului sunt salvate intr-un fisier CSV pt analiza
+
+Imbunatatiri posibile:
+- tehnici suplimentare de procesare a textului
+- ajustare parametrilor eps si min_samples ai alg dbscan
+
+"""
