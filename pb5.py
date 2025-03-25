@@ -42,29 +42,23 @@ Used here to extract the main text content from HTML files
 from bs4 import BeautifulSoup
 
 """ 
-/*** 
 TfidfVectorizer: Converts a collection of raw documents to a matrix of TF-IDF features
 TF-IDF stands for Term Frequency-Inverse Document Frequency, which highlights words that are more informative
 Used here to transform the text extracted from HTML files into numerical feature vectors
-***/
 """
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 """ 
-/***
 cosine_similarity: Computes the cosine similarity between vectors
 Measures the cosine of the angle between two vectors, which is used here to quantify how similar two documents are based on their TF-IDF vectors
-***/
 """
 from sklearn.metrics.pairwise import cosine_similarity
 
-""" 
-/*** 
+"""  
 DBSCAN (Density-Based Spatial Clustering of Applications with Noise): 
 A clustering algorithm that groups together points (in this case, document vectors) that are closely packed
 It does not require specifying the number of clusters beforehand and can identify outliers (points not belonging to any cluster)
 Used here to cluster similar HTML documents based on their computed distance matrix
-***/
 """
 from sklearn.cluster import DBSCAN
 
