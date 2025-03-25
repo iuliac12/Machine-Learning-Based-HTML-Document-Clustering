@@ -40,4 +40,7 @@ To execute the script, run:
 
 Replace <path_to_html_directory> with the folder containing the HTML files to be clustered.
 
+ ## Results
+
 <img src="https://github.com/user-attachments/assets/c6a16362-ef6a-4f87-8fb0-97968ab4d8ef" width="300" height="700">
+<img src="https://github.com/user-attachments/assets/5ce926eb-c37e-4565-9a15-167c59a90ba5" width="300" height="700">
